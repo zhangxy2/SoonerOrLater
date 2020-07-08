@@ -16,7 +16,11 @@
     <script src="js/tinymce/js/tinymce/tinymce.min.js"></script>
     <script src="js/tinymce/js/tinymce_setup.js"></script>
 </head>
-
+<style>
+    .preview {
+        width: 100px;
+    }
+</style>
 <body>
     <div class="container-fluid">
         <div class="common_title">
@@ -27,24 +31,20 @@
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章标题：</label>
                     <div class="col-sm-10">
-                        <input type="email" class="form-control" id="inputEmail3" placeholder="文章标题">
+                        <input type="email" class="form-control" id="inputEmail3" name="title" placeholder="文章标题">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputPassword3" class="col-sm-2 control-label">文章封面：</label>
                     <div class="col-sm-10">
-                        <input type="file" id="exampleInputFile">
+                        <img src="" alt="" class="preview">
+                        <input type="file" id="exampleInputFile" name="cover">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章类别：</label>
                     <div class="col-sm-4">
-                        <select class="form-control">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
+                        <select class="form-control" name="type">
                         </select>
                     </div>
                 </div>
@@ -53,7 +53,7 @@
                     <div class="col-sm-4">
 
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="YYYY-MM-DD" id="dateinput">
+                            <input type="text" class="form-control" name="date" placeholder="YYYY-MM-DD" id="dateinput">
                             <span class="input-group-btn">
                                 <button class="btn btn-default" type="button"
                                     onclick="jeDate('#dateinput',{trigger:false,format: 'YYYY-MM-DD'})"><i
@@ -72,7 +72,7 @@
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-success">发布</button>
+                        <button type="submit" class="btn btn-success btn-publish">发布</button>
                         <button type="submit" class="btn btn-default">存为草稿</button>
                     </div>
                 </div>
@@ -82,4 +82,84 @@
 
 </body>
 
+<script src="./js/template-web.js"></script>
+
+<script type="text/html" id="cate">
+    {{each data v}}
+    <option value="{{v.id}}">{{v.name}}</option>
+    {{/each}}
+</script>
+
+
+<script>
+    /*
+    http://localhost:8000/admin/article_publish
+    步骤:
+    1.图片预览
+        通过img标签
+        files[0] 获取到上传的文件对象信息
+        url路径 URL.createObjectUrl
+        将路径设置给img得src
+    2.文章类型处理
+        http://localhost:8000/admin/category_search
+        ajax请求类别数据
+    3.发布按钮点击事件
+        http://localhost:8000/admin/article_publish
+     */
+
+    $(function () {
+        //图片预览
+      $('#exampleInputFile').change(function () {
+        var file = this.files[0]
+        var url = URL.createObjectURL(file)
+        $(this).prev('img').attr('src',url)
+      })
+
+      $.ajax({
+        url:'http://localhost:8000/admin/category_search',
+        success:function (backData) {
+            $('select').html(template('cate',backData))
+        }
+      })
+
+      //发布文章
+      $('.btn-publish').click(function (e) {
+        e.preventDefault()
+        //formData
+        var formData = new FormData($('form')[0])
+        //formata 可以追加
+        formData.append('content',tinyMCE.activeEditor.getContent())
+        formData.append('state','已发布')
+
+        $.ajax({
+          url:'http://localhost:8000/admin/article_publish',
+          type:'post',
+          data:formData,
+          contentType:false,
+          processData:false,
+          success:function (backData) {
+            console.log(backData)
+          }
+        })
+      })
+
+    })
+</script>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
