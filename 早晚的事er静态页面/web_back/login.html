@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>早晚的事er-后台登录页</title>
+    <link rel="stylesheet" type="text/css" href="css/reset.css">
+    <link rel="stylesheet" type="text/css" href="css/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+
+    <!--    引入bootstrap-->
+    <link rel="stylesheet" href="./js/bootstrap/css/bootstrap.min.css">
+</head>
+
+<body>
+<div class="main_wrap">
+    <div class="header">
+        <a href="#" class="logo"><img src="images/logo.png" alt=""></a>
+        <div class="copyright">CopyRight © 2020 哈尔滨布卡科技网络有限公司<br>All Rights Reserved</div>
+    </div>
+
+    <div class="login_form_con">
+        <div class="login_title"></div>
+        <form class="login_form">
+            <i class="iconfont icon-user"></i>
+            <i class="iconfont icon-key"></i>
+            <input type="text" class="input_txt" placeholder="邮箱/手机号">
+            <input type="password" class="input_pass" placeholder="密码">
+            <input type="submit" class="input_sub" value="登 录">
+        </form>
+    </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">提示框</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+
+<script src="js/jquery-1.12.4.min.js"></script>
+<script src="js/bootstrap/js/bootstrap.min.js"></script>
+<script>
+    $(function () {
+        /**
+         * 登陆功能
+         * 1、点击登陆按钮
+         * 2、去掉两端空白字符 str.trim（）
+         * 3、非空判断
+         *      空 警告 bootstrap 模态块
+         *      非空 ajax请求
+         *          请求地址：http://localhost:8000/admin/login
+         *          请求方式：post
+         *          登陆成功 去首页
+         *          失败 警告
+         * */
+        $('.input_sub').click(function (e) {
+            // 阻止 submit的自动提交表单信息行为
+            e.preventDefault();
+            // 获取 用户名 密码 去掉两端空白字符
+            var user_name = $('.input_txt').val().trim();
+            var password = $('.input_pass').val().trim();
+
+            $('.input_txt').val('');
+            $('.input_pass').val('');
+
+            // 非空判断
+            if (user_name === "" || password === "") {
+                $('.modal-body').text('用户名或密码为空');
+                $('#myModal').modal();
+                return;
+            }
+            $.ajax({
+                url: 'http://localhost:8000/admin/login',
+                type: 'post',
+                data: {
+                    user_name: user_name,
+                    password: password
+                },
+                success : function (backData) {
+                    console.log(backData)
+
+                    if (backData.code === 200){
+                        window.location.href = 'index.html';
+                    }else {
+                        $('.modal-body').text('用户名或密码错误');
+                        $('#myModal').modal();
+                    }
+                }
+            })
+
+
+        })
+
+
+    })
+
+
+</script>
+
+</html>

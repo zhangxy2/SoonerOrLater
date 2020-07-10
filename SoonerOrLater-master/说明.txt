@@ -1,0 +1,5 @@
+本地服务端
+
+
+
+在当前文件夹内部 (shift)鼠标右键-->在此处打开命令行--> npm i --> node app.js (双击  开始.bat)--> app已启动,端口为8000(http://localhost:8000)
